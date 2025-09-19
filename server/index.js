@@ -30,7 +30,7 @@ app.use(limiter);
 // Middleware
 app.use(cors({
   origin: process.env.NODE_ENV === 'production' 
-    ? ['https://seudominio.com'] 
+    ? ['https://iaducena.b1mdigital.com.br'] 
     : ['http://localhost:3000'],
   credentials: true
 }));

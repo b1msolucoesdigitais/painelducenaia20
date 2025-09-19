@@ -114,16 +114,6 @@ const LoginForm: React.FC = () => {
               )}
             </button>
           </div>
-
-          <div className="mt-6 p-4 bg-blue-50 rounded-md">
-            <h3 className="text-sm font-medium text-blue-800 mb-2">
-              Credenciais padrão:
-            </h3>
-            <p className="text-xs text-blue-700">
-              <strong>Email:</strong> admin@ducena.com<br />
-              <strong>Senha:</strong> admin123
-            </p>
-          </div>
         </form>
       </div>
     </div>
