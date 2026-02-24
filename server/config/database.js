@@ -2,7 +2,7 @@ const mysql = require('mysql2/promise');
 require('dotenv').config();
 
 const dbConfig = {
-  host: process.env.DB_HOST || '190.102.41.148',
+  host: process.env.DB_HOST || '185.225.22.119',
   user: process.env.DB_USER || 'bmdigita_iaducena',
   password: process.env.DB_PASSWORD || '@B41gke84',
   database: process.env.DB_NAME || 'bmdigita_iaducena',
@@ -32,7 +32,7 @@ async function testConnection() {
 async function initializeDatabase() {
   try {
     const connection = await pool.getConnection();
-    
+
     // Criar tabela de usuários
     await connection.execute(`
       CREATE TABLE IF NOT EXISTS users (
@@ -43,7 +43,7 @@ async function initializeDatabase() {
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
       )
     `);
-    
+
     // Criar tabela de seções
     await connection.execute(`
       CREATE TABLE IF NOT EXISTS sections (
@@ -55,7 +55,7 @@ async function initializeDatabase() {
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
       )
     `);
-    
+
     // Criar tabela de webhooks
     await connection.execute(`
       CREATE TABLE IF NOT EXISTS webhooks (
@@ -66,19 +66,19 @@ async function initializeDatabase() {
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
       )
     `);
-    
+
     // Inserir usuário padrão se não existir
     const [users] = await connection.execute('SELECT COUNT(*) as count FROM users');
     if (users[0].count === 0) {
       const bcrypt = require('bcryptjs');
-      const hashedPassword = await bcrypt.hash('admin123', 10);
+      const hashedPassword = await bcrypt.hash('ducena@123', 10);
       await connection.execute(
         'INSERT INTO users (email, password_hash) VALUES (?, ?)',
         ['admin@ducena.com', hashedPassword]
       );
-      console.log('👤 Usuário padrão criado: admin@ducena.com / admin123');
+      console.log('👤 Usuário padrão criado: admin@ducena.com / ducena@123');
     }
-    
+
     // Inserir seções padrão se não existirem
     const [sections] = await connection.execute('SELECT COUNT(*) as count FROM sections');
     if (sections[0].count === 0) {
@@ -87,7 +87,7 @@ async function initializeDatabase() {
         { title: 'Instruções Gerais', content: 'Sempre seja útil, preciso e educado...', order: 2 },
         { title: 'Formato de Resposta', content: 'Responda sempre em formato estruturado...', order: 3 }
       ];
-      
+
       for (const section of defaultSections) {
         await connection.execute(
           'INSERT INTO sections (title, content, `order`) VALUES (?, ?, ?)',
@@ -96,7 +96,7 @@ async function initializeDatabase() {
       }
       console.log('📝 Seções padrão criadas');
     }
-    
+
     connection.release();
     console.log('✅ Banco de dados inicializado com sucesso!');
   } catch (error) {
