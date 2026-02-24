@@ -101,29 +101,32 @@ app.use('*', (req, res) => {
   res.status(404).json({ error: 'Rota não encontrada' });
 });
 
-// Inicializar servidor
-async function startServer() {
+// Inicializar banco de dados (sem process.exit para não matar serverless)
+async function initDB() {
   try {
-    // Testar conexão com banco
     const isConnected = await testConnection();
-    if (!isConnected) {
+    if (isConnected) {
+      await initializeDatabase();
+    } else {
       console.error('❌ Não foi possível conectar ao banco de dados');
-      process.exit(1);
     }
-
-    // Inicializar banco de dados
-    await initializeDatabase();
-
-    // Iniciar servidor
-    app.listen(PORT, () => {
-      console.log(`🚀 Servidor rodando na porta ${PORT}`);
-      console.log(`📱 Ambiente: ${process.env.NODE_ENV || 'development'}`);
-      console.log(`🔗 API disponível em: http://localhost:${PORT}/api`);
-    });
   } catch (error) {
-    console.error('❌ Erro ao iniciar servidor:', error);
-    process.exit(1);
+    console.error('❌ Erro ao iniciar banco:', error);
   }
 }
 
-startServer();
+// Inicializar banco
+initDB();
+
+// Para desenvolvimento local
+if (process.env.NODE_ENV !== 'production') {
+  app.listen(PORT, () => {
+    console.log(`🚀 Servidor rodando na porta ${PORT}`);
+    console.log(`📱 Ambiente: ${process.env.NODE_ENV || 'development'}`);
+    console.log(`🔗 API disponível em: http://localhost:${PORT}/api`);
+  });
+}
+
+// Exportar app para Vercel serverless
+module.exports = app;
+
