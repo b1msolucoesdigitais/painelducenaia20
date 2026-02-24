@@ -16,8 +16,31 @@ const usersController = require('./controllers/usersController');
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Middleware de segurança
-app.use(helmet());
+// CORS - deve vir ANTES do helmet
+app.use(cors({
+  origin: process.env.NODE_ENV === 'production'
+    ? ['https://iaducena.b1mdigital.com.br']
+    : ['http://localhost:3000'],
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
+
+// Tratar preflight OPTIONS explicitamente
+app.options('*', cors({
+  origin: process.env.NODE_ENV === 'production'
+    ? ['https://iaducena.b1mdigital.com.br']
+    : ['http://localhost:3000'],
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
+
+// Middleware de segurança (configurado para não interferir com CORS)
+app.use(helmet({
+  crossOriginResourcePolicy: { policy: 'cross-origin' },
+  crossOriginOpenerPolicy: false
+}));
 
 // Rate limiting
 const limiter = rateLimit({
@@ -27,13 +50,6 @@ const limiter = rateLimit({
 });
 app.use(limiter);
 
-// Middleware
-app.use(cors({
-  origin: process.env.NODE_ENV === 'production' 
-    ? ['https://iaducena.b1mdigital.com.br'] 
-    : ['http://localhost:3000'],
-  credentials: true
-}));
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 
@@ -64,8 +80,8 @@ app.get('/api/users', authenticateToken, usersController.getUsers);
 
 // Rota de health check
 app.get('/api/health', (req, res) => {
-  res.json({ 
-    status: 'OK', 
+  res.json({
+    status: 'OK',
     timestamp: new Date().toISOString(),
     environment: process.env.NODE_ENV || 'development'
   });
@@ -74,7 +90,7 @@ app.get('/api/health', (req, res) => {
 // Middleware de tratamento de erros
 app.use((err, req, res, next) => {
   console.error('Erro não tratado:', err);
-  res.status(500).json({ 
+  res.status(500).json({
     error: 'Erro interno do servidor',
     ...(process.env.NODE_ENV === 'development' && { details: err.message })
   });
