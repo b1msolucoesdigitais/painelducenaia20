@@ -1,13 +1,13 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { useAuthStore, useSectionsStore, useWebhooksStore, useUIStore } from '../store';
-import { sectionsService, webhooksService, configService, usersService } from '../services/api';
+import { sectionsService, webhooksService, configService } from '../services/api';
 import { toast } from 'react-hot-toast';
-import { 
-  Plus, 
-  Settings, 
-  Save, 
-  RefreshCw, 
-  LogOut, 
+import {
+  Plus,
+  Settings,
+  Save,
+  RefreshCw,
+  LogOut,
   Menu,
   X,
   Edit3,
@@ -175,17 +175,17 @@ const Dashboard: React.FC = () => {
       const oldIndex = sections.findIndex((item) => item.id === active.id);
       const newIndex = sections.findIndex((item) => item.id === over.id);
       const newSections = arrayMove(sections, oldIndex, newIndex);
-      
+
       // Atualizar ordem localmente primeiro
       reorderSections(newSections);
-      
+
       try {
         // Enviar apenas os IDs e ordem para o backend
         const sectionsToSend: { id: number; order: number }[] = newSections.map((section, index) => ({
           id: section.id,
           order: index + 1
         }));
-        
+
         await sectionsService.reorderSections(sectionsToSend);
         toast.success('Seções reordenadas com sucesso!');
       } catch (error: any) {
@@ -251,7 +251,7 @@ const Dashboard: React.FC = () => {
                 </div>
               </div>
             </div>
-            
+
             <div className="flex items-center space-x-4">
               <div className="hidden sm:flex items-center space-x-3 px-3 py-2 bg-gray-50 rounded-lg">
                 <div className="w-2 h-2 bg-green-400 rounded-full"></div>
@@ -283,14 +283,14 @@ const Dashboard: React.FC = () => {
               <X className="h-6 w-6" />
             </button>
           </div>
-          
+
           <nav className="mt-8 px-6 space-y-8">
             {/* AGENTE DE IA */}
             <div className="space-y-3">
               <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-4">
                 AGENTE DE IA
               </h3>
-              
+
               <button
                 onClick={handleCreateSection}
                 className="w-full flex items-center px-4 py-3 text-sm font-medium text-white bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800 rounded-lg shadow-sm hover:shadow-md transition-all duration-200"
@@ -298,7 +298,7 @@ const Dashboard: React.FC = () => {
                 <Plus className="h-4 w-4 mr-3" />
                 Nova Seção
               </button>
-              
+
               <button
                 onClick={handleSaveConfiguration}
                 disabled={isSaving || sections.length === 0}
@@ -318,7 +318,7 @@ const Dashboard: React.FC = () => {
               <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-4">
                 PRODUTOS
               </h3>
-              
+
               <button
                 onClick={handleUpdateProducts}
                 disabled={isUpdating}
@@ -338,7 +338,7 @@ const Dashboard: React.FC = () => {
               <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-4">
                 CONFIGURAÇÕES
               </h3>
-              
+
               <button
                 onClick={() => setModalOpen(true, 'settings')}
                 className="w-full flex items-center px-4 py-3 text-sm font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-all duration-200"
@@ -346,7 +346,7 @@ const Dashboard: React.FC = () => {
                 <Settings className="h-4 w-4 mr-3" />
                 Configurar Webhooks
               </button>
-              
+
               <button
                 onClick={() => setModalOpen(true, 'users')}
                 className="w-full flex items-center px-4 py-3 text-sm font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-all duration-200"
@@ -380,7 +380,7 @@ const Dashboard: React.FC = () => {
 
         {/* Overlay para mobile */}
         {isSidebarOpen && (
-          <div 
+          <div
             className="fixed inset-0 z-40 bg-black bg-opacity-50 lg:hidden"
             onClick={() => setIsSidebarOpen(false)}
           />
@@ -451,18 +451,18 @@ const Dashboard: React.FC = () => {
         section={selectedSection}
         onSave={loadData}
       />
-      
+
       <SettingsModal
         isOpen={isModalOpen && modalType === 'settings'}
         onClose={() => setModalOpen(false)}
         onSave={loadData}
       />
-      
+
       <UsersModal
         isOpen={isModalOpen && modalType === 'users'}
         onClose={() => setModalOpen(false)}
       />
-      
+
       <StatsModal
         isOpen={isModalOpen && modalType === 'stats'}
         onClose={() => setModalOpen(false)}
